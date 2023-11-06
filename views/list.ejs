@@ -1,0 +1,36 @@
+<%- include("header") -%>
+
+<form action="/logout" method="POST">
+  <div style="text-align: end;">
+      <button style="background-color: black; color: aliceblue; border-radius: 10px;">
+          logout
+      </button>
+  </div>
+</form>
+
+  <div class="box" id="heading">
+    <h1>Hello <%= listTitle %> </h1>
+  </div>
+
+  <div class="box">
+
+
+  <%  newListItems.forEach(function(item){ %>
+
+    <form action="/delete" method="post">
+      <div class="item">
+        <input type="checkbox" name="checkbox" value="<%=item._id%>" class="inp" onChange="this.form.submit()">
+        <p><%=item.name%></p>
+      </div>
+      <input type="hidden" class="inp" name="listName" value="<%= listTitle %>"></input>
+    </form>
+  <%  }) %>
+
+
+      <form class="item" action="/" method="post">
+        <input type="text" class="inp" name="newItem" placeholder="New Item" autocomplete="off">
+        <button type="submit" name="list" class="butt" value="<%= listTitle %>">+</button>
+      </form>
+  </div>
+
+
