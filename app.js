@@ -13,8 +13,10 @@ app.set('view engine', 'ejs');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
-const url =  process.env.MONGO_URL;
-mongoose.connect(url , {useNewUrlParser: true});
+const url = process.env.MONGO_URL;
+
+
+mongoose.connect(url, {useNewUrlParser: true});
 
 const itemsSchema = {
   name: String
@@ -81,11 +83,11 @@ app.post("/", async function(req, res) {
       await item.save();
       res.redirect("/");
     } else {
-      const foundList = await List.findOne({name: theName});
+      const foundList = await List.findOne({name: listName});
       console.log(foundList);
       foundList.items.push(item);
       await foundList.save();
-      res.redirect("/" + listName);
+      res.redirect("/" + theName);
     }
   } catch (err) {
     console.error(err);
@@ -108,7 +110,8 @@ app.post("/delete", async function(req, res) {
       res.redirect("/");
     } else {
       const foundList = await List.findOneAndUpdate({name: listName}, { $pull: { items: { _id: checkedItemId } } });
-      res.redirect("/" + listName);
+      console.log('the' +listName);
+      res.redirect("/" + theName);
     }
   } catch (err) {
     console.error(err);
@@ -158,21 +161,20 @@ app.post('/logout', (req,res)=>{
 
 app.get("/:customListName", async function(req, res) {
   try {
-    const customListName = _.kebabCase(req.params.customListName);
-    const kTheName = _.kebabCase(theName);
+    const customListName = _.capitalize(req.params.customListName);
     const foundList = await List.findOne({name: customListName});
     console.log(theName);
-  if(customListName === kTheName && theName != 'None'){
+  if(req.params.customListName === theName && theName != 'None'){
     if (!foundList) {
       // Create a new list
       const list = new List({
-        name: theName,
+        name: customListName,
         items: defaultItems
       });
       await list.save();
-      res.redirect("/" + customListName);
+      res.redirect("/" + theName);
     } else {
-      res.render("list", {listTitle: _.startCase(theName), newListItems: foundList.items});
+      res.render("list", {listTitle: foundList.name, newListItems: foundList.items});
     }
     
 
