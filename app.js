@@ -4,7 +4,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const _ = require("lodash");
-
+require("dotenv").config();
 
 
 const app = express();
@@ -13,8 +13,8 @@ app.set('view engine', 'ejs');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
-
-mongoose.connect("mongodb+srv://russ:guCXaxhmuHOjHi5Y@cluster0.zchxmu8.mongodb.net/?retryWrites=true&w=majority" , {useNewUrlParser: true});
+const url =  process.env.MONGO_URL;
+mongoose.connect(url , {useNewUrlParser: true});
 
 const itemsSchema = {
   name: String
@@ -144,8 +144,8 @@ app.post('/login', async function (req, res) {
         isLogged = true;
         
           res.redirect('/' + foundUser.fName);
+         
       }
-   
   } catch (err) {
       console.log(err);
   }
@@ -172,7 +172,7 @@ app.get("/:customListName", async function(req, res) {
       await list.save();
       res.redirect("/" + customListName);
     } else {
-      res.render("list", {listTitle: theName, newListItems: foundList.items});
+      res.render("list", {listTitle: _.startCase(theName), newListItems: foundList.items});
     }
     
 
